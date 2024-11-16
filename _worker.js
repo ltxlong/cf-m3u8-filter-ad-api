@@ -49,7 +49,8 @@ export default {
 
 function filter_log(...msg) {
 
-    console.log('%c[m3u8_filter_ad]', 'font-weight: bold; color: white; background-color: #70b566b0; padding: 2px; border-radius: 2px;', ...msg);
+    //console.log('%c[m3u8_filter_ad]', 'font-weight: bold; color: white; background-color: #70b566b0; padding: 2px; border-radius: 2px;', ...msg);
+    console.log(...msg)
 
 }
 
