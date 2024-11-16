@@ -21,7 +21,7 @@ export default {
             // 如果没有url参数 或者 url非法
             if (!url || !isValidUrl(url)) {
                 return new Response('正确请求为: ?url=m3u8视频链接', {
-                    headers: { 'Content-Type': 'text/plain' }
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                 })
             }
 
