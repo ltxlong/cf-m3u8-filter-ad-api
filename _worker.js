@@ -12,7 +12,7 @@ let the_ext_x_mode = 0 // 0：ext_x_discontinuity判断模式0 ；1：ext_x_disc
 let violent_filter_mode_flag = false // 是否启用暴力拆解模式，默认否-自动判断模式
 
 export default {
-    async fetch(request, env, ctx) {
+    async fetch(request, env) {
         try {
             violent_filter_mode_flag = env?.VIOLENT_FILTER_MODE_FLAG ?? violent_filter_mode_flag;
 
@@ -20,7 +20,7 @@ export default {
 
             // 如果没有url参数 或者 url非法
             if (!url || !isValidUrl(url)) {
-                return new Response('正确请求为: ?url=m3u8视频链接', {
+                return new Response('hello world!', {
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                 })
             }
