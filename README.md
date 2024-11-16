@@ -3,7 +3,7 @@ cloudflare pages 的 m3u8过滤插播广告api
 
 
 # 调用：
-pages.dev?url=视频链接
+video的链接由原来的视频链接，替换为pages.dev?url=视频链接
 
 ### 说明：
 php版本和cf worker版本的代码在API.md
