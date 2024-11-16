@@ -14,6 +14,8 @@ let violent_filter_mode_flag = false // 是否启用暴力拆解模式，默认�
 export default {
     async fetch(request, env) {
         try {
+            filter_log('----------------------------插播广告过滤--------------------------');
+            
             violent_filter_mode_flag = env?.VIOLENT_FILTER_MODE_FLAG ?? violent_filter_mode_flag;
 
             let url = new URL(request.url).searchParams.get('url')
@@ -49,12 +51,9 @@ export default {
 
 function filter_log(...msg) {
 
-    //console.log('%c[m3u8_filter_ad]', 'font-weight: bold; color: white; background-color: #70b566b0; padding: 2px; border-radius: 2px;', ...msg);
-    console.log(...msg)
+    console.log('%c[m3u8_filter_ad]', 'font-weight: bold; color: white; background-color: #70b566b0; padding: 2px; border-radius: 2px;', ...msg);
 
 }
-
-filter_log('----------------------------插播广告过滤--------------------------');
 
 function isValidUrl(url) {
     try {
