@@ -40,11 +40,12 @@ export default {
                     })
                 }
             }
-
+            console.log(url)
             // 添加https://
             if (!url.startsWith('http')) {
                 url = 'https://' + url
             }
+            console.log(url)
             
             // 如果不是m3u8文件，直接返回原始请求
             if (!is_m3u8_file(url)) {
