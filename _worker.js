@@ -27,7 +27,7 @@ export default {
                     const path = new URL(request.url).pathname
                     if (path.startsWith('/url/')) {
                         url = path.slice(5)  // 移除开头的 /url/
-
+                        alert(url)
                         // 添加https://
                         if (!url.startsWith('http')) {
                             url = 'https://' + url
