@@ -20,33 +20,23 @@ export default {
 
             let url = new URL(request.url).searchParams.get('url')
 
-            // 如果没有url参数 或者 url非法
-            if (!url || !isValidUrl(url)) {
-                if (!url) {
-                    // 如果没有查询参数，则尝试从路径中获取
-                    const path = new URL(request.url).pathname
-                    if (path.startsWith('/url/')) {
-                        url = path.slice(5)  // 移除开头的 /url/
-                    } else {
-                        return new Response('hello world!', {
-                            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                        })
-                    }
-                }
-
-                if (!isValidUrl(url)) {
+            // 如果没有url参数
+            if (!url) {
+                // 如果没有查询参数，则尝试从路径中获取
+                const path = new URL(request.url).pathname
+                if (path.startsWith('/url/')) {
+                    url = path.slice(5)  // 移除开头的 /url/
+                } else {
                     return new Response('hello world!', {
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                     })
                 }
             }
-            
-            console.log(url);
+        
             // 添加https://
             if (!url.startsWith('http')) {
-                url = 'https://' + url;
+                url = 'https://' + url
             }
-            console.log(url);
             
             // 如果不是m3u8文件，直接返回原始请求
             if (!is_m3u8_file(url)) {
