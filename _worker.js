@@ -24,7 +24,7 @@ export default {
             if (!url || !isValidUrl(url)) {
                 if (!url) {
                     // 如果没有查询参数，则尝试从路径中获取
-                    const path = request.url.pathname
+                    const path = new URL(request.url).pathname
                     if (path.startsWith('/url/')) {
                         url = path.slice(5)  // 移除开头的 /url/
                     } else {
