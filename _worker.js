@@ -19,7 +19,8 @@ export default {
             violent_filter_mode_flag = env?.VIOLENT_FILTER_MODE_FLAG ?? violent_filter_mode_flag;
 
             let url = new URL(request.url).searchParams.get('url')
-            
+            console.log('前面的')
+            console.log(url)
             // 如果没有url参数 或者 url非法
             if (!url || !isValidUrl(url)) {
                 if (!url) {
@@ -27,7 +28,8 @@ export default {
                     const path = new URL(request.url).pathname
                     if (path.startsWith('/url/')) {
                         url = path.slice(5)  // 移除开头的 /url/
-                        alert(url)
+                        console.log('path模式')
+                        console.log(url)
                         // 添加https://
                         if (!url.startsWith('http')) {
                             url = 'https://' + url
@@ -46,7 +48,8 @@ export default {
                 }
             }
 
-            alert(url)
+            console.log('后面的')
+            console.log(url)
             
             // 如果不是m3u8文件，直接返回原始请求
             if (!is_m3u8_file(url)) {
