@@ -20,6 +20,14 @@ export default {
 
             let url = new URL(request.url).searchParams.get('url')
 
+            // 如果没有查询参数，则尝试从路径中获取
+            if (!targetUrl) {
+                const path = url.pathname
+                if (path.startsWith('/url/')) {
+                    targetUrl = path.slice(5)  // 移除开头的 /url/
+                }
+            }
+            
             // 如果没有url参数 或者 url非法
             if (!url || !isValidUrl(url)) {
                 return new Response('hello world!', {
