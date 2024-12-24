@@ -422,11 +422,11 @@ try {
                 }
                 $url = $targetUrl;
             } else {
-                echo null;
+                echo "Hello World!";
                 exit;
             }
         } else {
-            echo null;
+            echo "Hello World!";
             exit;
         }
     } else {
