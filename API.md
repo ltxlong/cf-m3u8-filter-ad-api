@@ -388,13 +388,78 @@ class M3u8FilterAdApi {
         return $result;
     }
 
+    public function fetchUrl($url, $method = 'GET', $data = null, $options = []) {
+        $ch = curl_init();
+    
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $options['connect_timeout'] ?? 10); // 设置连接超时时间
+        curl_setopt($ch, CURLOPT_TIMEOUT, $options['timeout'] ?? 30); // 设置请求超时时间
+        curl_setopt($ch, CURLOPT_USERAGENT, $options['user_agent'] ?? 'Mozilla/5.0'); // 设置 User-Agent
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 建议去掉，然后自己配置SSL
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // 建议去掉，然后自己配置SSL
+    
+        // 设置请求方法
+        if ($method === 'POST') {
+            curl_setopt($ch, CURLOPT_POST, true);
+            if ($data !== null) {
+                if (isset($options['form_data']) && $options['form_data'] === true) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+                } else {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+                }
+            }
+        }
+    
+        // 设置请求头
+        $headers = [
+            'Accept: application/json'
+        ];
+        if (!isset($options['form_data']) || $options['form_data'] !== true) {
+            $headers[] = 'Content-Type: application/json';
+        }
+        
+        if (isset($options['headers']) && is_array($options['headers'])) {
+            $headers = array_merge($headers, $options['headers']);
+        }
+    
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new Exception("cURL Error: " . $error);
+        }
+    
+        curl_close($ch);
+    
+        if ($httpCode < 200 || $httpCode >= 300) {
+            throw new Exception("HTTP Error: " . $httpCode . " - " . $response);
+        }
+        
+        if ($response === false) {
+            throw new Exception("Empty response received");
+        }
+    
+        $decodedResponse = json_decode($response, true);
+        if ($decodedResponse === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $response;
+        }
+    
+        return $decodedResponse;
+    }
+    
     public function filter($url) {
         try {
             if (!$this->is_m3u8_file($url)) {
                 throw new Exception('url is not a m3u8 file');
             }
+            
+            $m3u8Content = $this->fetchUrl($url);
 
-            $m3u8Content = @file_get_contents($url); 
             if (!$m3u8Content) {
                 throw new Exception('get m3u8 content failed');
             }
@@ -404,7 +469,7 @@ class M3u8FilterAdApi {
 
             return implode("\n", $new_lines);
         } catch (Exception $e) {
-            return null;
+            return print_r($e);
         }
     }
 }
@@ -412,19 +477,11 @@ class M3u8FilterAdApi {
 try {
     if (!isset($_GET['url'])) {
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        // 检查是否以 /url/ 开头
-        if (strpos($path, '/url/') === 0) {
-            $targetUrl = substr($path, 5); // 移除前面的 /url/
-            if ($targetUrl) {
-                // 如果不是以 http 开头（忽略大小写），就添加 https://
-                if (!stripos($targetUrl, 'http') === 0) {
-                    $targetUrl = 'https://' . $targetUrl;
-                }
-                $url = $targetUrl;
-            } else {
-                echo "Hello World!";
-                exit;
-            }
+
+        $pos = strpos($path, '/url/');
+
+        if ($pos !== false) {
+            $url = substr($path, $pos + 5);
         } else {
             echo "Hello World!";
             exit;
@@ -433,10 +490,21 @@ try {
         $url = $_GET['url'];
     }
 
+    if ($url) {
+        // 如果不是以 http 开头（忽略大小写），就添加 https://
+        if (stripos($url, 'http') !== 0) {
+            $url = 'https://' . $url;
+        }
+    } else {
+        echo "Hello World!";
+        exit;
+    }
+
     $m3u8FilterAdApi = new M3u8FilterAdApi();
     $result = $m3u8FilterAdApi->filter($url);   
-
+ 
     // 设置响应头
+    // 如果不行，删了这里的header试试
     header('Content-Type: application/vnd.apple.mpegurl');
     // 允许跨域
     header('Access-Control-Allow-Origin: *');
